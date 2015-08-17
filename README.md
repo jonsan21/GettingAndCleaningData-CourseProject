@@ -1,16 +1,23 @@
 # GettingAndCleaningData-CourseProject
 
-The purpose of this project is to demonstrate your ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis. You will be graded by your peers on a series of yes/no questions related to the project. You will be required to submit: 1) a tidy data set as described below, 2) a link to a Github repository with your script for performing the analysis, and 3) a code book that describes the variables, the data, and any transformations or work that you performed to clean up the data called CodeBook.md. You should also include a README.md in the repo with your scripts. This repo explains how all of the scripts work and how they are connected.  
+The purpose of this project is to demonstrate the ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis. The repository contains:
+
+1. This README.md file
+2. CodeBook.md. A code book that describes the variables, the data, and any transformations or work that was performed to clean up the data. 
+3. run_analysis.R. An R script that performs "getting and cleaning" data as described below.
+4. tidydata.txt. An output file, as described below.
+
+This repo explains how all of the scripts work and how they are connected.  
 
 One of the most exciting areas in all of data science right now is wearable computing - see for example  this article . Companies like Fitbit, Nike, and Jawbone Up are racing to develop the most advanced algorithms to attract new users. The data linked to from the course website represent data collected from the accelerometers from the Samsung Galaxy S smartphone. A full description is available at the site where the data was obtained: 
 
-http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones 
+http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones
 
 Here are the data for the project: 
 
 https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip 
 
-##What does the script do
+##What does the script (run_analysis.R) do
 
 1. Merges the training and the test sets to create one data set.
 2. Appropriately labels the data set with descriptive variable names. (This is task 4 in the assignment but done earlier for simplicity)
@@ -62,16 +69,19 @@ mergedSubset <- merged[grepl("mean\\(|std\\(",names(merged))]
 ```
 We then name the activities in the data set using descriptive activity names. (TASK 3)
 We use the join function from the plyr package so that the order of the data is not changed.
+We then write this tidy data to tidydata.txt
 ```r
 joinedLabels <- join(mergedLabels,activityLabels)
 mergedSubset <- cbind(joinedLabels$V2,mergedSubset)
 colnames(mergedSubset)[1] <- "activitylabels"
-```
-We then create a second, independent tidy data set with the average of each variable for each activity and each subject. (TASK 5)
-```r
 mergedSubset <- cbind(mergedSubject,mergedSubset)
 colnames(mergedSubset)[1] <- "subject"
-tidydata <- mergedSubset %>% group_by(activitylabels, subject) %>% summarise_each(funs(mean))
-setwd(root)
+write.table(mergedSubset,"tidydata.txt",row.names = FALSE)
+```
+We then create a second, independent tidy data set with the average of each variable for each activity and each subject. (TASK 5)
+We use the summarise_each function with chaining from the dplyr package to do this in one line!
+We then write this tidy data to tidydata_mean.txt
+```r
+tidydata <- mergedSubset %>% group_by(activitylabels, subject) %>% summarise_each(funs(mean)) 
 write.table(tidydata,"tidydata.txt",row.names = FALSE)
 ```
