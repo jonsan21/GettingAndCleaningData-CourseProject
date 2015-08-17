@@ -62,14 +62,17 @@ mergedSubject <- rbind(trainSubject, testSubject)
 mergedLabels <- rbind(trainLabels, testLabels)
 ```
 Continued by extracting only the measurements on the mean and standard deviation for each measurement. (TASK 2)
+
 In this process we appropriately labels the data set with descriptive variable names. (TASK 4)
 ```r
 names(merged) <- features$V2 #this is for task 4
 mergedSubset <- merged[grepl("mean\\(|std\\(",names(merged))]
 ```
 We then name the activities in the data set using descriptive activity names. (TASK 3)
+
 We use the join function from the plyr package so that the order of the data is not changed.
-We then write this tidy data to tidydata.txt
+
+We write this tidy data to tidydata.txt
 ```r
 joinedLabels <- join(mergedLabels,activityLabels)
 mergedSubset <- cbind(joinedLabels$V2,mergedSubset)
@@ -78,9 +81,11 @@ mergedSubset <- cbind(mergedSubject,mergedSubset)
 colnames(mergedSubset)[1] <- "subject"
 write.table(mergedSubset,"tidydata.txt",row.names = FALSE)
 ```
-We then create a second, independent tidy data set with the average of each variable for each activity and each subject. (TASK 5)
+We can then create a second, independent tidy data set with the average of each variable for each activity and each subject. (TASK 5)
+
 We use the summarise_each function with chaining from the dplyr package to do this in one line!
-We then write this tidy data to tidydata_mean.txt
+
+We write this tidy data to tidydata_mean.txt
 ```r
 tidydata <- mergedSubset %>% group_by(activitylabels, subject) %>% summarise_each(funs(mean)) 
 write.table(tidydata,"tidydata.txt",row.names = FALSE)
