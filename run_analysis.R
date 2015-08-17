@@ -1,8 +1,6 @@
+#load the required packages
 library(plyr)
 library(dplyr)
-
-setwd("C:/Users/josanito/Desktop/GettingAndCleaningData")
-root <- getwd()
 
 #download and unzip file
 fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
@@ -38,12 +36,12 @@ mergedSubset <- merged[grepl("mean\\(|std\\(",names(merged))]
 joinedLabels <- join(mergedLabels,activityLabels)
 mergedSubset <- cbind(joinedLabels$V2,mergedSubset)
 colnames(mergedSubset)[1] <- "activitylabels"
+mergedSubset <- cbind(mergedSubject,mergedSubset)
+colnames(mergedSubset)[1] <- "subject"
+write.table(mergedSubset,"tidydata.txt",row.names = FALSE)
 
 #TASK 4 - columns have been named in TASK2
 
 #TASK 5 - creates a second, independent tidy data set with the average of each variable for each activity and each subject
-mergedSubset <- cbind(mergedSubject,mergedSubset)
-colnames(mergedSubset)[1] <- "subject"
 tidydata <- mergedSubset %>% group_by(activitylabels, subject) %>% summarise_each(funs(mean))
-setwd(root)
-write.table(tidydata,"tidydata.txt",row.names = FALSE)
+write.table(tidydata,"tidydata_mean.txt",row.names = FALSE)
